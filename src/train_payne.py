@@ -277,16 +277,16 @@ def save_model_parameters(file_path, model_numpy, x_min, x_max, meta_data):
 
 
 if __name__ == "__main__":
-    learning_rate = 0.001  # original 0.001
+    learning_rate = 0.001
     patience = 10
     check_interval = 1000
     hidden_neurons = 1024
     weight_decay = 0.001
-    train_fraction = 0.93
+    train_fraction = 0.80
     t_max = 200_000
-
     data_file = ["test_batch0.npz"]
-    output_file = f"{argv[2]}_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.npz"
+
+    output_file = f"{argv[1]}_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.npz"
 
     # print current time
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
