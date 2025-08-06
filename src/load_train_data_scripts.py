@@ -125,3 +125,79 @@ def load_data(file_path, train_fraction=0.75, random_state=42):
     num_pix = y.shape[1]
 
     return x, y, x_valid, y_valid, x_min, x_max, num_pix, dim_in, wvl, label_names
+
+
+def build_model(dim_in, num_pix, hidden_neurons):
+    """
+    Build a simple feed-forward neural network with two hidden layers.
+
+    Parameters
+    ----------
+    dim_in : int
+        Dimensionality of input features.
+    num_pix : int
+        Number of output pixels (flux values).
+    hidden_neurons : int
+        Number of neurons in each hidden layer.
+
+    Returns
+    -------
+    model : torch.nn.Sequential
+        The defined neural network.
+    """
+    model = torch.nn.Sequential(
+        torch.nn.Linear(dim_in, hidden_neurons),
+        torch.nn.SiLU(),
+        torch.nn.Linear(hidden_neurons, hidden_neurons),
+        torch.nn.SiLU(),
+        torch.nn.Linear(hidden_neurons, hidden_neurons),
+        torch.nn.SiLU(),
+        torch.nn.Linear(hidden_neurons, num_pix),
+        torch.nn.Sigmoid()  # enforce [0, 1] outputs
+    )
+    return model, "Linear-SiLU-Linear-SiLU-Linear-SiLU-Linear-Sigmoid"
+
+
+def load_model_parameters(data, model):
+    """
+    Load model parameters and scaling info from a .npz file into the given model.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the .npz file containing the saved model parameters and scaling info.
+    model : torch.nn.Sequential
+        The model instance with the same architecture as was used during saving.
+
+    Returns
+    -------
+    model : torch.nn.Sequential
+        The model with loaded parameters.
+    x_min : np.ndarray
+        The saved minimum values for input scaling.
+    x_max : np.ndarray
+        The saved maximum values for input scaling.
+    """
+
+    with torch.no_grad():
+        # Assuming your Linear layers are at indices 0, 2, and 4
+        model[0].weight.copy_(torch.from_numpy(data['w_array_0']))
+        model[0].bias.copy_(torch.from_numpy(data['b_array_0']))
+
+        model[2].weight.copy_(torch.from_numpy(data['w_array_1']))
+        model[2].bias.copy_(torch.from_numpy(data['b_array_1']))
+
+        model[4].weight.copy_(torch.from_numpy(data['w_array_2']))
+        model[4].bias.copy_(torch.from_numpy(data['b_array_2']))
+
+        model[6].weight.copy_(torch.from_numpy(data['w_array_3']))
+        model[6].bias.copy_(torch.from_numpy(data['b_array_3']))
+
+    return model
+
+
+def scale_back(x, x_min, x_max, label_name=None):
+    return_value = (x + 0.5) * (x_max - x_min) + x_min
+    if label_name == "teff":
+        return_value = return_value * 1000
+    return return_value

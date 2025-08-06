@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 import torch
-from torch.autograd import Variable
 from torch import nn
 import time
 import argparse
@@ -10,44 +9,12 @@ import sys
 import datetime
 from sys import argv
 from payne_plot_performance import do_plot
+from payne_plot_pixel_error import plot_pixel_error
 import os, math, pathlib
 from torch.utils.data import TensorDataset, DataLoader
 from torch.cuda.amp import GradScaler
 from torch.amp import autocast
-from load_train_data_scripts import load_data
-
-
-
-
-def build_model(dim_in, num_pix, hidden_neurons):
-    """
-    Build a simple feed-forward neural network with two hidden layers.
-
-    Parameters
-    ----------
-    dim_in : int
-        Dimensionality of input features.
-    num_pix : int
-        Number of output pixels (flux values).
-    hidden_neurons : int
-        Number of neurons in each hidden layer.
-
-    Returns
-    -------
-    model : torch.nn.Sequential
-        The defined neural network.
-    """
-    model = torch.nn.Sequential(
-        torch.nn.Linear(dim_in, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, num_pix),
-        torch.nn.Sigmoid()  # enforce [0, 1] outputs
-    )
-    return model, "Linear-SiLU-Linear-SiLU-Linear-SiLU-Linear-Sigmoid"
+from load_train_data_scripts import load_data, build_model
 
 
 def train_model(
@@ -61,7 +28,7 @@ def train_model(
         valid_batch_size: int   = 8192,
         base_lr         : float = 1e-3,
         weight_decay    : float = 1e-2,
-        t_max           : int|None = None,          # steps per cosine period
+        t_max           : int   = 80_000,          # steps per cosine period
         patience        : int   = 20,
         check_interval  : int   = 1_000,            # validate & maybe checkpoint
         checkpoint_dir  : str   = "checkpoints",
@@ -105,10 +72,6 @@ def train_model(
         lr=base_lr,
         weight_decay=weight_decay
     )
-
-    # If user did not specify T_max, pick “~50 passes over train_dl”
-    if t_max is None:
-        t_max = 200_000
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer,
@@ -320,4 +283,5 @@ if __name__ == "__main__":
 
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
+    plot_pixel_error(data_file, output_file, train_fraction=train_fraction)
     do_plot(data_file, output_file, train_fraction=train_fraction)

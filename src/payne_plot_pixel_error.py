@@ -1,99 +1,13 @@
 from __future__ import annotations
 
 import torch, numpy as np, matplotlib.pyplot as plt
-from torch.autograd import Variable
-import pandas as pd
 import datetime
-from sys import argv
-from load_train_data_scripts import load_data
+from load_train_data_scripts import load_data, build_model, load_model_parameters, scale_back
 
 
-def load_model_parameters(data, model):
-    """
-    Load model parameters and scaling info from a .npz file into the given model.
-    
-    Parameters
-    ----------
-    file_path : str
-        Path to the .npz file containing the saved model parameters and scaling info.
-    model : torch.nn.Sequential
-        The model instance with the same architecture as was used during saving.
-    
-    Returns
-    -------
-    model : torch.nn.Sequential
-        The model with loaded parameters.
-    x_min : np.ndarray
-        The saved minimum values for input scaling.
-    x_max : np.ndarray
-        The saved maximum values for input scaling.
-    """
-    
-    with torch.no_grad():
-        # Assuming your Linear layers are at indices 0, 2, and 4
-        model[0].weight.copy_(torch.from_numpy(data['w_array_0']))
-        model[0].bias.copy_(torch.from_numpy(data['b_array_0']))
-        
-        model[2].weight.copy_(torch.from_numpy(data['w_array_1']))
-        model[2].bias.copy_(torch.from_numpy(data['b_array_1']))
-        
-        model[4].weight.copy_(torch.from_numpy(data['w_array_2']))
-        model[4].bias.copy_(torch.from_numpy(data['b_array_2']))
 
-        model[6].weight.copy_(torch.from_numpy(data['w_array_3']))
-        model[6].bias.copy_(torch.from_numpy(data['b_array_3']))
-    
-    return model
-
-
-def build_model(dim_in, num_pix, hidden_neurons):
-    """
-    Build a simple feed-forward neural network with two hidden layers.
-
-    Parameters
-    ----------
-    dim_in : int
-        Dimensionality of input features.
-    num_pix : int
-        Number of output pixels (flux values).
-    hidden_neurons : int
-        Number of neurons in each hidden layer.
-
-    Returns
-    -------
-    model : torch.nn.Sequential
-        The defined neural network.
-    """
-    model = torch.nn.Sequential(
-        torch.nn.Linear(dim_in, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, hidden_neurons),
-        torch.nn.SiLU(),
-        torch.nn.Linear(hidden_neurons, num_pix),
-        torch.nn.Sigmoid()  # enforce [0, 1] outputs
-    )
-    return model
-
-
-def scale_back(x, x_min, x_max, label_name=None):
-    return_value = (x + 0.5) * (x_max - x_min) + x_min
-    if label_name == "teff":
-        return_value = return_value * 1000
-    return return_value
-
-
-if __name__ == "__main__":
+def plot_pixel_error(data_file, model_path, train_fraction):
     print("Plotting pixel-wise error of the neural network model")
-
-    data_file = argv[1]
-    model_path = argv[2]
-
-    data_file = ["/nexus/posix0/MIA-bergemann-cluster/nisto/payne/grid_nlte_4mostified_inf_noise_may2025_hrs_batch0.npz", 
-                 "/nexus/posix0/MIA-bergemann-cluster/nisto/payne/grid_nlte_4mostified_inf_noise_may2025_hrs_batch1.npz",
-                 "/nexus/posix0/MIA-bergemann-cluster/nisto/payne/grid_nlte_4mostified_inf_noise_may2025_hrs_batch2.npz",]
-    
 
     time_to_save = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -103,7 +17,7 @@ if __name__ == "__main__":
         model_path_save = model_path.split('.')[0]
 
     # load model
-    x, y, x_valid, y_valid, x_min, x_max, num_pix, dim_in, wvl = load_data(data_file, train_fraction=0.93)
+    x, y, x_valid, y_valid, x_min, x_max, num_pix, dim_in, wvl = load_data(data_file, train_fraction=train_fraction)
 
     print("Loaded data: file", data_file)
 
