@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import spectral_model
 from convolve import conv_macroturbulence, conv_rotation, conv_res
-matplotlib.use("MacOSX")
+
 # Created by storm at 06.08.25
 
 
