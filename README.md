@@ -93,3 +93,6 @@ The script `plot_payne_spectrum.py` can be used to plot the spectrum based on th
   ```
   - This is an example of the labels you can use to plot the spectrum. Adjust the values according to your needs. The first four values are Teff, logg, [Fe/H], and vmic, respectively. The rest are individual abundances.
   - Broadening is automatically done posterior using FFT script.
+
+If you do that, you should get the following plot:
+![Example plot](./test_network/payne_spectrum_plot.png)
