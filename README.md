@@ -6,7 +6,7 @@ Original Payne paper: [Ting et al. 2019](https://ui.adsabs.harvard.edu/abs/2019A
 
 The main advantage of our network is that it is a single network (similar to Kovalev et al. 2019), optimised and tested to ensure the best performance. For details see the paper: Storm et al. in prep. (TBA soon).
 
-A small test network and links to the usage of the network online to be added after submission of the paper.
+A small test network is included for your test, but please note it is a small network and might not be as precise for the science cases.
 
 ## Usage instructions
 
@@ -84,6 +84,7 @@ There are two scripts for evaluating the network: `payne_plot_performance.py` an
 
 The script `plot_payne_spectrum.py` can be used to plot the spectrum based on the labels. It loads the model and produces a plot. 
 
+- `path_model = "../test_network/payne_tsnlte_fgk_4most_hr_mini_2025-08-01-11-57-03_storm.npz"` - change this to the path of your trained model. We include a small test network in the `test_network` directory, which is that one.
 - `#wavelength_obs, flux_obs = np.loadtxt("your_path.txt", dtype=float, unpack=True, usecols=(0, 1))` - uncomment this line and change the path to your observed spectrum if you want to plot it together with the synthetic spectrum.
 - ```
     payne_values = [5.777, 4.44, 0.0, 1.0] + [0.0] * (len(labels) - 4)
@@ -94,5 +95,5 @@ The script `plot_payne_spectrum.py` can be used to plot the spectrum based on th
   - This is an example of the labels you can use to plot the spectrum. Adjust the values according to your needs. The first four values are Teff, logg, [Fe/H], and vmic, respectively. The rest are individual abundances.
   - Broadening is automatically done posterior using FFT script.
 
-If you do that, you should get the following plot:
+If you do that, you should get the following plot for the test network (for the sun):
 ![Example plot](./test_network/payne_spectrum_plot.png)
