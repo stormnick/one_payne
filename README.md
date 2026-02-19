@@ -4,7 +4,7 @@ This repository contains the code for training a neural network to predict stell
 
 Original Payne paper: [Ting et al. 2019](https://ui.adsabs.harvard.edu/abs/2019ApJ...879...69T/abstract) with corresponding Github repository: [Payne](https://github.com/tingyuansen/The_Payne). Our approach follows closer the implementation in [Kovalev et al. 2019](https://ui.adsabs.harvard.edu/abs/2019A%26A...628A..54K/abstract). Both papers were used in the development of this repository. 
 
-The main advantage of our network is that it is a single network (similar to Kovalev et al. 2019), optimised and tested to ensure the best performance. For details see the paper: Storm et al. in prep. (TBA soon).
+The main advantage of our network is that it is a single network (similar to Kovalev et al. 2019), optimised and tested to ensure the best performance. For details see the paper: [Storm et al. 2025b subm.](https://ui.adsabs.harvard.edu/abs/2025arXiv251215888S/abstract).
 
 A small test network is included for your test, but please note it is a small network and might not be as precise for the science cases.
 
