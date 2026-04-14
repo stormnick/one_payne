@@ -97,3 +97,9 @@ The script `plot_payne_spectrum.py` can be used to plot the spectrum based on th
 
 If you do that, you should get the following plot for the test network (for the sun):
 ![Example plot](./test_network/payne_spectrum_plot.png)
+
+## Fitting with the network
+
+In `./fitting_scripts/payne_fit_clean_full_one_star.py`, you will find the script that automatically loads the network, example spectrum and fits it. This is the same algorithm that was used in the paper. The `./linemasks/` folder includes the line masks used for fitting. You can adjust the line masks as needed for each element.
+
+The networks used are available for download here: [Payne networks](https://keeper.mpdl.mpg.de/d/dcd70b68bcb24ae39b05/). These include 4MOST-HR (`payne_ts_4most_hr_may2025_batch012_medium_reducedlogg_altarch_notscratch_2025-08-08-11-33-02.npz`), 4MOST-LR (`payne_ts_4most_lr_may2025_batch012_medium_2025-08-26-07-48-43.npz`), 80k resolution (`payne_ts_80k_aug2025_batch012_big_2025-08-26-13-27-41.npz`) and 4MOST-HR that includes vsini broadening as part of the network (`payne_ts_4most_hr_aug2025_batch012_medium_brd_simple_2025-08-28-08-32-17.npz`). Note that the paper used the 4MOST-HR network, but the other networks are also available for testing and fitting. Please test the other networks before use! And please cite my paper if you use the networks in your work.
